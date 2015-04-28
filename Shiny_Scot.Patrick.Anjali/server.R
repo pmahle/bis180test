@@ -1,5 +1,8 @@
+
 library(shiny)
 library(ggplot2)
+load("GWAS_data_for_shiny.Rdata")
+
 
 # Define server logic required to draw a boxplot
 shinyServer(function(input, output) {
@@ -11,19 +14,43 @@ shinyServer(function(input, output) {
   #     when inputs change
   #  2) Its output type is a plot
   
-  output$boxPlot <- renderPlot({
+  output$thePlot <- renderPlot({
     
-    # set up the plot
-    pl <- ggplot(data = iris,
+    
+    # set up the plot - modifying to use GWAS 
+    
+    # Create and view single histogram of all of the Protein.content data
+    #qplot(x="popID",y=input$Character,geom=input$PlotType,data=data.pheno.mds)
+    
+    plot <- ggplot(data = data.pheno.mds,
                  #Use aes_string below so that input$trait is interpreted
                  #correctly.  The other variables need to be quoted
-                 aes_string(x="Species",
-                            y=input$trait,
-                            fill="Species"
-                 )
+                 aes_string(x="popID",
+                            y=input$Character,
+                            fill="popID"
+                 ) 
     )
     
+    
     # draw the boxplot for the specified trait
-    pl + geom_boxplot()
+    if (input$PlotType == "violin")
+    {
+      print("Violin reached")
+      plot + geom_violin()
+    }else
+    
+
+       {if (input$PlotType == "boxplot")
+     {
+       print("Boxplot reached")
+       plot + geom_boxplot()
+     }
+       }
+    
+    
+
+ 
+      
+    
   })
 })
